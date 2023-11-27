@@ -1,0 +1,8 @@
+{
+    "keyboard.dispatch": "keyCode",
+    "window.zoomLevel": 1,
+    "editor.minimap.enabled": false,
+    "editor.lineNumbers": "relative",
+    "editor.mouseWheelScrollSensitivity": 5,
+    "editor.smoothScrolling": true
+}
