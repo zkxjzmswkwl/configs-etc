@@ -1,64 +1,63 @@
 ------------------------------------------------------------
 -- Bootstrap packer
 ------------------------------------------------------------
-vim.cmd [[packadd packer.nvim]]
+----- lazy.nvim bootstrap
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git", "clone", "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
 
-require('packer').startup(function(use)
-  use 'wbthomason/packer.nvim'
-  use 'hrsh7th/nvim-cmp'
+require("lazy").setup({
 
-  use 'williamboman/mason.nvim'
-  use 'williamboman/mason-lspconfig.nvim'
-  use 'neovim/nvim-lspconfig'
+  -- Core
+  "neovim/nvim-lspconfig",
+  "hrsh7th/nvim-cmp",
 
-  -- Colors
-  use {'srcery-colors/srcery-vim', as = 'srcery'}
-  use 'blazkowolf/gruber-darker.nvim'
-  use { 'catppuccin/nvim', as = 'catppuccin' }
-  use 'aktersnurra/no-clown-fiesta.nvim'
-  use { 'Everblush/nvim', as = 'everblush' }
-  use { 'uloco/bluloco.nvim', requires = { 'rktjmp/lush.nvim' } }
-  use 'rafi/awesome-vim-colorschemes'
-  use 'xero/miasma.nvim'
-  use({ 'rose-pine/neovim', as = 'rose-pine' })
+  -- Mason
+  "williamboman/mason.nvim",
+  "williamboman/mason-lspconfig.nvim",
 
-  -- UI / Utils
-  use 'nvim-tree/nvim-tree.lua'
-  use 'nvim-tree/nvim-web-devicons'
-  use 'ThePrimeagen/vim-be-good'
-  use 'ThePrimeagen/harpoon'
-  use 'tpope/vim-surround'
-  use 'tpope/vim-commentary'
-  use 'vim-autoformat/vim-autoformat'
-  use 'darrikonn/vim-gofmt'
-
-  -- Terminal
-  use 'akinsho/toggleterm.nvim'
-  use {
-    's1n7ax/nvim-terminal',
-    config = function()
-      vim.o.hidden = true
-      require('nvim-terminal').setup()
-    end,
-  }
+  -- Tree-sitter (THIS is the important part)
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate", -- ← this is why lazy fixes your issue
+  },
 
   -- Telescope
-	use {
-	  'nvim-telescope/telescope.nvim',
-	  requires = { 'nvim-lua/plenary.nvim' }
-	}
+  {
+    "nvim-telescope/telescope.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+  },
 
-  -- Treesitter
-  use {
-    'nvim-treesitter/nvim-treesitter',
-    run = function()
-      require('nvim-treesitter.install').update({ with_sync = true })()
-    end,
-  }
+  -- File tree
+  "nvim-tree/nvim-tree.lua",
+  "nvim-tree/nvim-web-devicons",
 
-  -- Formatter (modern)
-  use 'stevearc/conform.nvim'
-end)
+  -- Terminal
+  "akinsho/toggleterm.nvim",
+
+  -- Formatting
+  "stevearc/conform.nvim",
+
+  -- Harpoon
+  "ThePrimeagen/harpoon",
+
+  -- QoL
+  "tpope/vim-surround",
+  "tpope/vim-commentary",
+  "ThePrimeagen/vim-be-good",
+
+  -- Colorschemes
+  { "srcery-colors/srcery-vim", name = "srcery" },
+  "xero/miasma.nvim",
+  "rafi/awesome-vim-colorschemes",
+})
 
 ------------------------------------------------------------
 -- Core options
@@ -86,6 +85,20 @@ vim.lsp.config.clangd = {}
 vim.lsp.config.ols = {}
 
 vim.lsp.enable({ 'clangd', 'ols' })
+
+require('nvim-treesitter.configs').setup({
+  ensure_installed = {
+    'javascript',
+    'tsx',
+    'lua',
+    'json',
+    'html',
+    'css',
+  },
+  highlight = {
+    enable = true,
+  },
+})
 ------------------------------------------------------------
 -- Completion
 ------------------------------------------------------------
@@ -189,3 +202,13 @@ vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
 ------------------------------------------------------------
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
 
+
+------------------------------------------------------------
+-- hood shit 
+------------------------------------------------------------
+vim.lsp.semantic_tokens.enable = true
+vim.filetype.add({
+  extension = {
+    js = 'javascriptreact',
+  },
+})
